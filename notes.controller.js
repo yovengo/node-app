@@ -7,11 +7,11 @@ const notesPath = path.join(__dirname, 'db.json')
 async function addNote(title) {
     const notes = await getNotes()
 
-      const note = {
-          title,
-          id: Date.now().toString()
-      }
-      notes.push(note)
+    const note = {
+        title,
+        id: Date.now().toString()
+    }
+    notes.push(note)
 
     await fs.writeFile(notesPath, JSON.stringify(notes))
     console.log(chalk.green('Note was added!'))
@@ -20,6 +20,10 @@ async function addNote(title) {
 async function getNotes() {
     const notes = await fs.readFile(notesPath, {encoding: "utf-8"})
     return Array.isArray(JSON.parse(notes)) ? JSON.parse(notes) : []
+}
+
+async function saveNotes(notes) {
+    await fs.writeFile(notesPath, JSON.stringify(notes))
 }
 
 async function printNotes() {
@@ -40,6 +44,19 @@ async function removeNote(id) {
     console.log(chalk.red('Note removed!'))
 }
 
+async function editNote(title, id) {
+    const notes = await getNotes()
+
+     notes.map((note) => {
+         if (note.id === id) {
+             note.title = title
+         }
+     })
+
+    await saveNotes(notes)
+
+}
+
 module.exports = {
-    addNote, printNotes, removeNote
+    addNote, getNotes, printNotes, removeNote, editNote
 }
