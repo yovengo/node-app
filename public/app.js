@@ -11,27 +11,24 @@ document.addEventListener('click', (event) => {
 
     if (event.target.dataset.type === 'edit') {
         const id = event.target.dataset.id
-
-        console.log(event.target)
-
-        const currentTitle = event.target.dataset.title
-        const newTitle = prompt('Введите новое название')
-
-        const title = !newTitle ? currentTitle : newTitle
-
-        edit(id, title)
+        const title = event.target.dataset.title
+        const newTitle = prompt('Введите новое название', title)
+        if (newTitle !== null) {
+            edit({id, title: newTitle}).then(() => {
+                event.target.closest('li').querySelector('span').innerText = newTitle
+            })
+        }
     }
 })
 
-async function edit(id, newTitle) {
-    const req = {id: id, title: newTitle}
-
-    await fetch(`/edit`, {
+async function edit(newNote) {
+    await fetch(`/${newNote.id}`, {
         method: "PUT",
         headers: {
-            "Content-Type": "application/json;charset=utf-8",
+            'Accept': 'application/json',
+            "Content-Type": "application/json;charset=utf-8"
         },
-        body: JSON.stringify(req)
+        body: JSON.stringify(newNote)
     })
 }
 
